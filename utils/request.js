@@ -23,29 +23,33 @@ const http = {
     const site = await this.getSite(key)
     try {
       const res = await ajax.post(site.api)
-      const json = parser.parse(res.data, this.xmlConfig)
+      //const json = parser.parse(res.data, this.xmlConfig)
+      const json = res.data
       const arr = []
-      if (json.rss.class) {
-        for (const i of json.rss.class.ty) {
+      if (json.class) {
+        for (const i of json.class) {
           const j = {
-            tid: i._id,
-            name: i._t
+            tid: i.type_id,
+            name: i.type_name
           }
           arr.push(j)
         }
       }
       return arr
     } catch (err) {
+      console.log(err)
       return err
     }
   },
   // 获取视频资源
-  async list (key, pg = 1, t) {
+  async list (key, pg , t) {
     const site = await this.getSite(key)
-    const url = `${site.api}?ac=videolist${t ? '&t=' + t: ''}&pg=${pg}`
+    const url = `${site.api}?ac=list${t ? '&t=' + t: ''}&pg=${pg}`
+    console.log("get url: ", url)
     try {
       const res = await ajax.post(url)
-      const json = parser.parse(res.data, this.xmlConfig)
+        
+      //const json = parser.parse(res.data, this.xmlConfig)
       if (json.rss.list.video) {
         return json.rss.list.video
       } else {
@@ -58,18 +62,26 @@ const http = {
   // 获取总资源数, 以及页数
   async page (key, t) {
     const site = await this.getSite(key)
-    const url = `${site.api}?ac=videolist${t ? '&t=' + t: ''}`
+    t = t || 0; // 如果 t 没有值，将其设置为 0
+    console.log("http.page:", key, t)
+    const url = `${site.api}?ac=list&t=${t}`
+    console.log("func page: url:", url)
     try {
       const res = await ajax.post(url)
-      const json = parser.parse(res.data, this.xmlConfig)
+      console.log("func page;res:", res)
+      // const json = parser.parse(res.data, this.xmlConfig)
+      // console.log("json:" ,json.rss.list )
+      const json = res.data
       const pg = {
-        page: json.rss.list._page,
-        pagecount: json.rss.list._pagecount,
-        pagesize: json.rss.list._pagesize,
-        recordcount: json.rss.list._recordcount
+        // page: json.,
+        pagecount: json.pagecount,
+        pagesize: json.total,
+        recordcount: json.total
       }
+      console.log('!!!!pg:')
       return pg
     } catch (err) {
+        console.log("Sorry,Im error:",err)
       return err
     }
   },
@@ -123,6 +135,32 @@ const http = {
   async site (jsonUrl) {
     try {
       const res = await ajax.get(jsonUrl)
+      return res.data
+    } catch (err) {
+      return err
+    }
+  },
+  async logger (logmsg) {
+    const fs = require('fs');
+    // 将日志内容追加到文件中
+    fs.appendFileSync('mylogfile.txt', logmsg + '\n');
+  },
+  async mypost (url) {
+    try {  
+      const res = await ajax.get(url)
+      console.log("res:", res.data)  
+      const json = res.data
+      //const json = parser.parse(res.data, this.xmlConfig)
+      console.log("json", json.pa)
+      return json
+    } catch (err) {
+      console ("im error:",err)
+      return err
+    }
+  },
+  async myget (url) {
+    try {
+      const res = await ajax.post(url)
       return res.data
     } catch (err) {
       return err

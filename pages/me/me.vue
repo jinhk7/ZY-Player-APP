@@ -42,6 +42,12 @@
         :arrow="false"
         @click="itemClickEvent(i)"
       ></u-cell-item>
+      <u-cell-item
+        title="单个功能调试"
+        value="Genius"
+        :arrow="false"
+        @click="testFunc()"
+      ></u-cell-item>
     </u-cell-group>
     <view class="tips">
       所有资源来自网上, 该软件不参与任何制作, 上传, 储存等内容,
@@ -54,6 +60,7 @@
 
 <script>
 import db from "../../utils/database.js";
+import http from "../../utils/request.js";
 export default {
   data() {
     return {
@@ -99,6 +106,14 @@ export default {
 			this.modalShow = false
 		},
     itemClickEvent(item) {},
+    async testFunc() {
+	    //http.mypost("http://cj.lziapi.com/index.php")
+      http.mypost("http://cj.lziapi.com/api.php/provide/vod/?ac=list")
+      // const site = await db.get('site', 'lziapi')
+      console.log("123")
+      // console.log(site.data.api)
+      
+    },
   },
 };
 </script>

@@ -138,6 +138,7 @@ export default {
       this.flowList = []
       this.$refs.uWaterfall.clear();
       await this.getPage(this.type.tid)
+	    console.log("searchClearEvent:",this.type.tid)
       await this.addData(this.site.key, this.pageCount, this.type.tid)
       this.pageCount--
       await this.addData(this.site.key, this.pageCount, this.type.tid)
@@ -146,13 +147,16 @@ export default {
     async openSiteSelect() {
       this.siteShow = true;
       const site = await db.get("site", this.site.key);
+	    console.log("openSiteSelect:",this.site.key)
     },
     async siteConfirm(e) {
       this.mask = true
       this.flowList = []
       this.$refs.uWaterfall.clear();
       const site = await db.get("site", e[0].value);
+      console.log("Fisrt db.e[0]:", site)
       this.site = site.data;
+	    console.log("2 db.e[0]:", site.data)
       await this.getPage()
       await this.getClass(this.site.key)
       await this.addData(this.site.key, this.pageCount)
@@ -171,7 +175,9 @@ export default {
       this.mask = true
       this.flowList = []
       this.$refs.uWaterfall.clear();
+      console.log(this.type.tid)
       await this.getPage(this.type.tid)
+      console.log(this.pageCount)
       await this.addData(this.site.key, this.pageCount, this.type.tid)
       this.pageCount--
       await this.addData(this.site.key, this.pageCount, this.type.tid)
@@ -193,6 +199,7 @@ export default {
         this.siteList = arr
       } else {
         this.$refs.uToast.show({ title: '读取视频源出错', type: 'warning', duration: '2300' })
+        console.log('读取视频源出错')
         return false
       }
       this.site = this.siteList[0]
@@ -204,6 +211,7 @@ export default {
     },
     async getPage (type) {
       const res = await http.page(this.site.key, type)
+      //console.log("WIP:",res.pagecount)
       this.pageCount = res.pagecount
       this.recordcount = res.recordcount
     },
@@ -223,7 +231,10 @@ export default {
     async addData(key, page, t) {
       console.log(key, page, t, 'lalala')
       const res = await http.list(key, page, t);
+	  // console.log("res:", res.data)
       const config = await db.get('setting', 'config')
+	  // console.log("config:", config, "config.data.R18:",config.data.R18)
+	  // console.log(res)
       for (let i = 0; i < res.length; i++) {
         let item = res[i];
         if (config.data.R18) {
@@ -234,6 +245,7 @@ export default {
           }
         } else {
           this.flowList.push(item);
+		        console.log("push list success.")
         }
       }
       if (this.flowList.length <= 6 && page) {
