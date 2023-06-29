@@ -146,6 +146,7 @@ export default {
     async openSiteSelect() {
       this.siteShow = true;
       const site = await db.get("site", this.site.key);
+      consol.log("openSiteSelect:",site)
     },
     async siteConfirm(e) {
       this.mask = true
@@ -154,6 +155,7 @@ export default {
       const site = await db.get("site", e[0].value);
       this.site = site.data;
       await this.getPage()
+      consol.log("siteConfirm:",this.site)
       await this.getClass(this.site.key)
       await this.addData(this.site.key, this.pageCount)
       this.pageCount--
@@ -178,7 +180,7 @@ export default {
       this.mask = false
     },
     openDetail(item) {
-      const url = `/pages/detail/detail?site=${this.site.key}&id=${item.id}`;
+      const url = `/pages/detail/detail?site=${this.site.key}&id=${item.id}&at=xml`;
       this.$u.route({ url: url });
     },
     async getSite() {

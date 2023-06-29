@@ -115,7 +115,7 @@ export default {
     async playEvent() {
       if (this.playList.length <= 1) {
         const d = this.playList[0];
-        const url = `/pages/play/play?site=${d.extra.site}&id=${d.extra.id}&name=${d.label}&url=${d.value}`;
+        const url = `/pages/play/play?site=${d.extra.site}&id=${d.extra.id}&name=${d.label}&url=${d.value}&at=xml`;
         await this.addHistory(d.label, d.value)
         this.$u.route({ url: url });
       } else {
@@ -124,7 +124,7 @@ export default {
     },
     async playConfirm(e) {
       const d = e[0];
-      const url = `/pages/play/play?site=${d.extra.site}&id=${d.extra.id}&name=${d.label}&url=${d.value}`;
+      const url = `/pages/play/play?site=${d.extra.site}&id=${d.extra.id}&name=${d.label}&url=${d.value}&at=xml`;
       await this.addHistory(d.label, d.value)
       this.$u.route({ url: url });
     },

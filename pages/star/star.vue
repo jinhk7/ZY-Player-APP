@@ -25,7 +25,7 @@ export default {
     openDetail(item) {
       const site = item.key.split("-")[0];
       const id = item.key.split("-")[1];
-      const url = `/pages/detail/detail?site=${site}&id=${id}`;
+      const url = `/pages/detail/detail?site=${site}&id=${id}&at=xml`;
       this.$u.route({ url: url });
     },
     async getAllStar() {

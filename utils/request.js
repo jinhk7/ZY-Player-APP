@@ -24,6 +24,7 @@ const http = {
     try {
       const res = await ajax.post(site.api)
       const json = parser.parse(res.data, this.xmlConfig)
+      console.log("视频分类:",json)
       const arr = []
       if (json.rss.class) {
         for (const i of json.rss.class.ty) {
@@ -42,7 +43,7 @@ const http = {
   // 获取视频资源
   async list (key, pg = 1, t) {
     const site = await this.getSite(key)
-    const url = `${site.api}?ac=videolist${t ? '&t=' + t: ''}&pg=${pg}`
+    const url = `${site.api}?ac=list&at=xml${t ? '&t=' + t: ''}&pg=${pg}`
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
@@ -58,16 +59,18 @@ const http = {
   // 获取总资源数, 以及页数
   async page (key, t) {
     const site = await this.getSite(key)
-    const url = `${site.api}?ac=videolist${t ? '&t=' + t: ''}`
+    const url = `${site.api}?ac=list&at=xml${t ? '&t=' + t: ''}`
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
+      console.log("page:",json.rss.list)
       const pg = {
         page: json.rss.list._page,
         pagecount: json.rss.list._pagecount,
         pagesize: json.rss.list._pagesize,
         recordcount: json.rss.list._recordcount
       }
+      console.log("page2:",pg)
       return pg
     } catch (err) {
       return err
@@ -77,23 +80,26 @@ const http = {
   async search (key, wd) {
     const site = await this.getSite(key)
     wd = encodeURI(wd)
-    const url = `${site.api}?wd=${wd}`
+    const url = `${site.api}?wd=${wd}&at=xml`
     try {
       const res = await ajax.post(url, { timeourt: 3000 })
       const json = parser.parse(res.data, this.xmlConfig)
+      console.log("搜索资源:",json.rss.list)
       if (json && json.rss && json.rss.list) {
         const videoList = json.rss.list.video
+        console.log("搜索资源videoList:",videoList)
         return videoList
       }
       return null
     } catch (err) {
+      console.log("搜索资源err:",err)
       return err
     }
   },
   // 获取资源详情
   async detail (key, id) {
     const site = await this.getSite(key)
-    const url = `${site.api}?ac=videolist&ids=${id}`
+    const url = `${site.api}??ac=detail&at=xml&ids=${id}`
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
@@ -101,6 +107,7 @@ const http = {
         const videoList = json.rss.list.video
         let m3u8List = []
         const dd = videoList.dl.dd
+        console.log(dd)
         const type = Object.prototype.toString.call(dd)
         if (type === '[object Array]') {
           for (const i of dd) {
