@@ -24,7 +24,7 @@ const http = {
     try {
       const res = await ajax.post(site.api)
       const json = parser.parse(res.data, this.xmlConfig)
-      console.log("视频分类:",json)
+      console.log("视频分类:",json.rss.json)
       const arr = []
       if (json.rss.class) {
         for (const i of json.rss.class.ty) {
@@ -44,6 +44,7 @@ const http = {
   async list (key, pg = 1, t) {
     const site = await this.getSite(key)
     const url = `${site.api}?ac=list&at=xml${t ? '&t=' + t: ''}&pg=${pg}`
+    console.log("list:",url)
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
@@ -59,7 +60,11 @@ const http = {
   // 获取总资源数, 以及页数
   async page (key, t) {
     const site = await this.getSite(key)
+	t = t || 0; // 如果 t 没有值，将其设置为 0
+	
     const url = `${site.api}?ac=list&at=xml${t ? '&t=' + t: ''}`
+	//const url = `${site.api}?ac=list&t=${t}`
+	console.log("func page: url:", url)
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
@@ -82,33 +87,33 @@ const http = {
     wd = encodeURI(wd)
     const url = `${site.api}?wd=${wd}&at=xml`
     try {
-      const res = await ajax.post(url, { timeourt: 3000 })
+      const res = await ajax.post(url, { timeout: 5000 })
       const json = parser.parse(res.data, this.xmlConfig)
-      console.log("搜索资源:",json.rss.list)
       if (json && json.rss && json.rss.list) {
         const videoList = json.rss.list.video
-        console.log("搜索资源videoList:",videoList)
         return videoList
       }
       return null
     } catch (err) {
-      console.log("搜索资源err:",err)
+      console.log("search-error:", err)
       return err
     }
   },
   // 获取资源详情
   async detail (key, id) {
     const site = await this.getSite(key)
-    const url = `${site.api}??ac=detail&at=xml&ids=${id}`
+    const url = `${site.api}?ac=detail&ids=${id}&at=xml`
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
+      console.log("detail json: ",json.rss.list.video.dl.dd)
       if (json && json.rss && json.rss.list) {
         const videoList = json.rss.list.video
         let m3u8List = []
         const dd = videoList.dl.dd
-        console.log(dd)
+        console.log("detail-dd:",dd)
         const type = Object.prototype.toString.call(dd)
+        console.log("detail-type:",type)
         if (type === '[object Array]') {
           for (const i of dd) {
             if (i._flag.indexOf('m3u8') >= 0) {
@@ -119,6 +124,7 @@ const http = {
           m3u8List = dd._t.split('#')
         }
         videoList.m3u8List = m3u8List
+        console.log("video list: ",videoList.m3u8List)
         return videoList
       }
       return null

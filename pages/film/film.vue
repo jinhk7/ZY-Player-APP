@@ -124,12 +124,27 @@ export default {
       this.flowList = []
       this.$refs.uWaterfall.clear();
       const res = await http.search(this.site.key, this.search)
-      if (res.length >= 1) {
+      //console.log("searchEvent-res:",res.length)
+      // if (res.length > 1) {
+      //   for (const i of res) {
+      //     const data = await http.detail(this.site.key, i.id)
+      //     this.flowList.push(data);
+      //   }
+      // }else if(res.id >= 1){
+      //     const data = await http.detail(this.site.key, res.id)
+      //     this.flowList.push(data);
+      // }
+      // 来自Chatgpt的方案
+      if (Array.isArray(res) && res.length > 1) {
         for (const i of res) {
-          const data = await http.detail(this.site.key, i.id)
+          const data = await http.detail(this.site.key, i.id);
           this.flowList.push(data);
         }
+      } else if (res && res.id >= 1) {
+        const data = await http.detail(this.site.key, res.id);
+        this.flowList.push(data);
       }
+
       this.mask = false
     },
     async searchClearEvent() {
@@ -146,7 +161,7 @@ export default {
     async openSiteSelect() {
       this.siteShow = true;
       const site = await db.get("site", this.site.key);
-      consol.log("openSiteSelect:",site)
+      console.log("openSiteSelect:",site)
     },
     async siteConfirm(e) {
       this.mask = true
@@ -155,7 +170,7 @@ export default {
       const site = await db.get("site", e[0].value);
       this.site = site.data;
       await this.getPage()
-      consol.log("siteConfirm:",this.site)
+      console.log("siteConfirm:",this.site)
       await this.getClass(this.site.key)
       await this.addData(this.site.key, this.pageCount)
       this.pageCount--
@@ -180,7 +195,7 @@ export default {
       this.mask = false
     },
     openDetail(item) {
-      const url = `/pages/detail/detail?site=${this.site.key}&id=${item.id}&at=xml`;
+      const url = `/pages/detail/detail?site=${this.site.key}&id=${item.id}`;
       this.$u.route({ url: url });
     },
     async getSite() {
