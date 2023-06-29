@@ -22,7 +22,8 @@ const http = {
   async class (key) {
     const site = await this.getSite(key)
     try {
-      const res = await ajax.post(site.api)
+      const url = `${site.api}?ac=list&at=xml`
+      const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
       console.log("视频分类:",json.rss.json)
       const arr = []
@@ -44,7 +45,7 @@ const http = {
   async list (key, pg = 1, t) {
     const site = await this.getSite(key)
     const url = `${site.api}?ac=list&at=xml${t ? '&t=' + t: ''}&pg=${pg}`
-    console.log("list:",url)
+    console.log("list",url)
     try {
       const res = await ajax.post(url)
       const json = parser.parse(res.data, this.xmlConfig)
@@ -129,6 +130,30 @@ const http = {
       }
       return null
     } catch (err) {
+      return err
+    }
+  },
+  async myhttp (key) {
+    const site = await this.getSite(key)
+     try {
+      const url = `${site.api}?ac=list&at=xml`
+      const res = await ajax.post(url)
+      console.log("res.data:",res.data)
+      const json = parser.parse(res.data, this.xmlConfig)
+      console.log("视频分类:",json.rss.class)
+    //   const arr = []
+    //   if (json.rss.class) {
+    //     for (const i of json.rss.class.ty) {
+    //       const j = {
+    //         tid: i._id,
+    //         name: i._t
+    //       }
+    //       arr.push(j)
+    //     }
+    //   }
+    //   return arr
+    } catch (err) {
+      console.log("error:",err)
       return err
     }
   },

@@ -241,6 +241,7 @@ export default {
       console.log(key, page, t, 'lalala')
       const res = await http.list(key, page, t);
       const config = await db.get('setting', 'config')
+      console.log("addData-res.length",res.length)
       for (let i = 0; i < res.length; i++) {
         let item = res[i];
         if (config.data.R18) {
